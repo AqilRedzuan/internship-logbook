@@ -5,8 +5,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Internship Daily Logbook</title>
+
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   background: #edf0f4;
@@ -14,6 +18,7 @@ body {
   margin: 0;
   padding: 20px;
 }
+
 .editor {
   max-width: 850px;
   margin: auto;
@@ -21,31 +26,43 @@ body {
   padding: 24px;
   border-radius: 10px;
 }
-h2 { margin-top: 0; }
+
+h2 {
+  margin-top: 0;
+}
+
 label {
   display: block;
   font-weight: bold;
   margin: 12px 0 5px;
 }
-input, textarea {
+
+input, textarea, select {
   width: 100%;
   padding: 9px;
   border: 1px solid #aaa;
   border-radius: 4px;
   font: inherit;
 }
-textarea { min-height: 75px; resize: vertical; }
+
+textarea {
+  min-height: 75px;
+  resize: vertical;
+}
+
 .row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
+
 .entry {
   border: 1px solid #ccc;
   padding: 12px;
   margin: 12px 0;
   border-radius: 6px;
 }
+
 button {
   padding: 10px 15px;
   margin: 6px 5px 6px 0;
@@ -55,8 +72,15 @@ button {
   color: white;
   cursor: pointer;
 }
-button:hover { opacity: .85; }
-button.danger { background: #ad3434; }
+
+button:hover {
+  opacity: .85;
+}
+
+button.danger {
+  background: #ad3434;
+}
+
 canvas {
   display: block;
   width: 100%;
@@ -65,6 +89,15 @@ canvas {
   background: white;
   touch-action: none;
 }
+
+#uploadedSignaturePreview {
+  display: none;
+  max-width: 220px;
+  max-height: 100px;
+  object-fit: contain;
+  margin-top: 10px;
+}
+
 .preview {
   max-width: 210mm;
   margin: 20px auto;
@@ -72,60 +105,81 @@ canvas {
   padding: 12mm;
   box-shadow: 0 2px 12px #bbb;
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   font-size: 11px;
   font-weight: bold;
 }
+
 .instruction {
   font-size: 9px;
   font-style: italic;
   margin: 3px 0 7px;
 }
+
 .log-table {
   border-collapse: collapse;
   width: 100%;
   table-layout: fixed;
   font-size: 11px;
 }
-.log-table th, .log-table td {
+
+.log-table th,
+.log-table td {
   border: 1px solid black;
   padding: 6px;
   text-align: left;
   vertical-align: top;
   overflow-wrap: anywhere;
 }
+
 .log-table th {
   text-align: center;
   height: 25px;
 }
+
 .log-table td {
   height: 135mm;
 }
-.log-table th:nth-child(1) { width: 15%; }
-.log-table th:nth-child(2) { width: 49%; }
-.log-table th:nth-child(3) { width: 36%; }
+
+.log-table th:nth-child(1) {
+  width: 15%;
+}
+
+.log-table th:nth-child(2) {
+  width: 49%;
+}
+
+.log-table th:nth-child(3) {
+  width: 36%;
+}
+
 .signature-area {
   margin-top: 30px;
   font-size: 11px;
 }
+
 .signature-area img {
   width: 145px;
   height: 55px;
   object-fit: contain;
   object-position: left bottom;
 }
+
 .signature-line {
   border-top: 1px solid black;
   width: 160px;
 }
+
 .attachment-page {
   max-width: 210mm;
   margin: 20px auto;
   background: white;
   padding: 12mm;
 }
+
 .attachment-page img {
   display: block;
   max-width: 100%;
@@ -133,42 +187,69 @@ canvas {
   object-fit: contain;
   margin: 12px 0;
 }
+
 .attachment-item {
   break-inside: avoid;
   margin-bottom: 20px;
 }
+
 @media (max-width: 600px) {
-  .row { grid-template-columns: 1fr; }
-  .editor { padding: 15px; }
-  .preview { padding: 7mm; }
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .editor {
+    padding: 15px;
+  }
+
+  .preview {
+    padding: 7mm;
+  }
 }
+
 @page {
   size: A4 portrait;
   margin: 0;
 }
+
 @media print {
-  body { padding: 0; background: white; }
-  .editor { display: none; }
-  .preview, .attachment-page {
+  body {
+    padding: 0;
+    background: white;
+  }
+
+  .editor {
+    display: none;
+  }
+
+  .preview,
+  .attachment-page {
     margin: 0;
     padding: 12mm;
     max-width: none;
     box-shadow: none;
   }
+
   .preview {
-    height: 297mm;
+    min-height: 297mm;
     break-after: page;
   }
+
   .attachment-page {
     break-before: page;
   }
-  .log-table td { height: 210mm; }
+
+  .log-table td {
+    height: 210mm;
+  }
 }
 </style>
 </head>
+
 <body>
 
 <section class="editor">
+
   <h2>Internship Daily Logbook</h2>
 
   <div class="row">
@@ -176,9 +257,11 @@ canvas {
       <label>Date</label>
       <input type="date" id="date">
     </div>
+
     <div>
       <label>Training Week</label>
-      <input type="number" id="week" min="1" placeholder="e.g. 2">
+      <input type="number" id="week"
+             min="1" placeholder="e.g. 2">
     </div>
   </div>
 
@@ -187,6 +270,7 @@ canvas {
       <label>Start Time</label>
       <input type="time" id="start" value="09:00">
     </div>
+
     <div>
       <label>End Time</label>
       <input type="time" id="end" value="17:30">
@@ -194,27 +278,101 @@ canvas {
   </div>
 
   <h3>Daily Activities</h3>
+
   <div id="entries"></div>
-  <button onclick="addEntry()">+ Add Entry</button>
+
+  <button type="button" onclick="addEntry()">
+    + Add Entry
+  </button>
 
   <h3>Attach Images</h3>
-  <input type="file" id="images"
-         accept="image/*" multiple>
+
+  <input
+    type="file"
+    id="images"
+    accept="image/*"
+    multiple
+  >
 
   <h3>Student Signature</h3>
-  <canvas id="signature"></canvas>
-  <button onclick="clearSignature()">Clear Signature</button>
+
+  <label>Choose Signature Method</label>
+
+  <select id="signatureMethod"
+          onchange="changeSignatureMethod()">
+
+    <option value="draw">
+      Draw Signature (Mouse / Touchscreen)
+    </option>
+
+    <option value="upload">
+      Upload Signature Image
+    </option>
+
+  </select>
+
+  <div id="drawSignatureSection">
+
+    <p>Sign using your mouse or touchscreen:</p>
+
+    <canvas id="signature"></canvas>
+
+    <button type="button" onclick="clearSignature()">
+      Clear Signature
+    </button>
+
+  </div>
+
+  <div id="uploadSignatureSection"
+       style="display:none;">
+
+    <p>Upload your existing signature (PNG / JPG):</p>
+
+    <input
+      type="file"
+      id="signatureUpload"
+      accept="image/png,image/jpeg,image/webp"
+      onchange="previewUploadedSignature()"
+    >
+
+    <img
+      id="uploadedSignaturePreview"
+      alt="Uploaded signature preview"
+    >
+
+  </div>
 
   <hr>
-  <button onclick="updatePreview()">Update Preview</button>
-  <button onclick="downloadPDF()">Download PDF</button>
+
+  <button type="button" onclick="updatePreview()">
+    Update Preview
+  </button>
+
+  <button type="button" onclick="downloadPDF()">
+    Download PDF
+  </button>
+
 </section>
 
+
+<!-- PDF PREVIEW -->
+
 <section class="preview" id="pdfPage">
+
   <div class="header">
-    <span>Date: <span id="pDate"></span></span>
-    <span>Day: <span id="pDay"></span></span>
-    <span>Training Week: <span id="pWeek"></span></span>
+
+    <span>
+      Date: <span id="pDate"></span>
+    </span>
+
+    <span>
+      Day: <span id="pDay"></span>
+    </span>
+
+    <span>
+      Training Week: <span id="pWeek"></span>
+    </span>
+
   </div>
 
   <div class="instruction">
@@ -223,6 +381,7 @@ canvas {
   </div>
 
   <table class="log-table">
+
     <thead>
       <tr>
         <th>Time</th>
@@ -230,6 +389,7 @@ canvas {
         <th>Description / Remarks</th>
       </tr>
     </thead>
+
     <tbody>
       <tr>
         <td id="pTime"></td>
@@ -237,6 +397,7 @@ canvas {
         <td id="pRemarks"></td>
       </tr>
     </tbody>
+
   </table>
 
   <div class="instruction">
@@ -244,185 +405,472 @@ canvas {
   </div>
 
   <div class="signature-area">
-    <img id="pSignature" alt="Student signature">
+
+    <img id="pSignature"
+         alt="Student signature">
+
     <div class="signature-line"></div>
-    <strong>Student Signature</strong><br>
-    <strong>Date:</strong> <span id="pSignDate"></span>
+
+    <strong>Student Signature</strong>
+
+    <br>
+
+    <strong>Date:</strong>
+    <span id="pSignDate"></span>
+
   </div>
+
 </section>
+
+
+<!-- IMAGE ATTACHMENTS -->
 
 <section id="attachments"></section>
 
+
 <script>
+
 const $ = id => document.getElementById(id);
 
+
+// ADD DAILY ACTIVITY
+
 function addEntry() {
+
   const div = document.createElement("div");
+
   div.className = "entry";
+
   div.innerHTML = `
     <label>Entry / Task</label>
-    <input class="task" placeholder="e.g. IT Asset Tracking">
+
+    <input class="task"
+      placeholder="e.g. IT Asset Tracking">
+
     <label>Description / Remarks</label>
+
     <textarea class="remark"
       placeholder="Describe what you did"></textarea>
-    <button class="danger" onclick="this.parentElement.remove()">
+
+    <button type="button" class="danger"
+      onclick="this.parentElement.remove()">
       Remove Entry
     </button>
   `;
+
   $("entries").appendChild(div);
+
 }
 
 addEntry();
 
+
+// SIGNATURE CANVAS
+
 const canvas = $("signature");
+
 const ctx = canvas.getContext("2d");
+
 let drawing = false;
 
+let uploadedSignatureData = "";
+
+
 function setupCanvas() {
+
   canvas.width = canvas.clientWidth;
+
   canvas.height = 130;
+
   ctx.lineWidth = 2;
+
   ctx.lineCap = "round";
+
   ctx.strokeStyle = "#111";
+
 }
+
 setupCanvas();
 
+
 function point(e) {
+
   const rect = canvas.getBoundingClientRect();
+
   return {
-    x: (e.clientX - rect.left) * canvas.width / rect.width,
-    y: (e.clientY - rect.top) * canvas.height / rect.height
+
+    x: (e.clientX - rect.left) *
+       canvas.width / rect.width,
+
+    y: (e.clientY - rect.top) *
+       canvas.height / rect.height
+
   };
+
 }
+
 
 canvas.addEventListener("pointerdown", e => {
+
   drawing = true;
+
   canvas.setPointerCapture(e.pointerId);
+
   const p = point(e);
+
   ctx.beginPath();
+
   ctx.moveTo(p.x, p.y);
+
 });
+
 
 canvas.addEventListener("pointermove", e => {
+
   if (!drawing) return;
+
   const p = point(e);
+
   ctx.lineTo(p.x, p.y);
+
   ctx.stroke();
+
 });
 
-canvas.addEventListener("pointerup", () => drawing = false);
-canvas.addEventListener("pointercancel", () => drawing = false);
+
+canvas.addEventListener("pointerup", () => {
+  drawing = false;
+});
+
+canvas.addEventListener("pointercancel", () => {
+  drawing = false;
+});
+
 
 function clearSignature() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
 }
+
+
+// SWITCH SIGNATURE METHOD
+
+function changeSignatureMethod() {
+
+  const method = $("signatureMethod").value;
+
+  $("drawSignatureSection").style.display =
+    method === "draw" ? "block" : "none";
+
+  $("uploadSignatureSection").style.display =
+    method === "upload" ? "block" : "none";
+
+  updatePreview();
+
+}
+
+
+// UPLOAD SIGNATURE IMAGE
+
+function previewUploadedSignature() {
+
+  const file = $("signatureUpload").files[0];
+
+  const preview = $("uploadedSignaturePreview");
+
+  uploadedSignatureData = "";
+
+  preview.style.display = "none";
+
+  preview.removeAttribute("src");
+
+  if (!file) {
+    updatePreview();
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+
+    uploadedSignatureData = e.target.result;
+
+    preview.src = uploadedSignatureData;
+
+    preview.style.display = "block";
+
+    updatePreview();
+
+  };
+
+  reader.readAsDataURL(file);
+
+}
+
+
+// GET SELECTED SIGNATURE
+
+function getSelectedSignature() {
+
+  const method = $("signatureMethod").value;
+
+  if (method === "upload") {
+
+    return uploadedSignatureData;
+
+  }
+
+  return canvas.toDataURL("image/png");
+
+}
+
+
+// FORMAT TIME
 
 function formatTime(value) {
+
   if (!value) return "";
+
   const [h, m] = value.split(":").map(Number);
+
   const suffix = h >= 12 ? "PM" : "AM";
+
   return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${suffix}`;
+
 }
 
+
+// UPDATE LOGBOOK PREVIEW
+
 function updatePreview() {
+
   const date = $("date").value;
-  const parsed = date ? new Date(date + "T12:00:00") : null;
+
+  const parsed = date
+    ? new Date(date + "T12:00:00")
+    : null;
 
   $("pDate").textContent = date || "";
+
   $("pDay").textContent = parsed
-    ? parsed.toLocaleDateString("en-US", {weekday:"long"})
+    ? parsed.toLocaleDateString("en-US", {
+        weekday: "long"
+      })
     : "";
+
   $("pWeek").textContent = $("week").value;
+
   $("pSignDate").textContent = date;
 
+
   $("pTime").textContent =
-    formatTime($("start").value) + " – " +
+    formatTime($("start").value) +
+    " – " +
     formatTime($("end").value);
 
+
   const tasks = document.querySelectorAll(".task");
+
   const remarks = document.querySelectorAll(".remark");
 
   const entryCell = $("pEntries");
+
   const remarkCell = $("pRemarks");
+
   entryCell.replaceChildren();
+
   remarkCell.replaceChildren();
 
+
   tasks.forEach((task, i) => {
+
     const t = document.createElement("p");
+
     t.textContent = (i + 1) + ". " + task.value;
+
     entryCell.appendChild(t);
 
+
     const r = document.createElement("p");
-    r.textContent = (i + 1) + ". " + remarks[i].value;
+
+    r.textContent =
+      (i + 1) + ". " + remarks[i].value;
+
     remarkCell.appendChild(r);
+
   });
 
-  $("pSignature").src = canvas.toDataURL("image/png");
+
+  // INSERT SIGNATURE INTO PDF
+
+  const signature = getSelectedSignature();
+
+  if (signature) {
+
+    $("pSignature").src = signature;
+
+  } else {
+
+    $("pSignature").removeAttribute("src");
+
+  }
+
 }
+
+
+// READ ATTACHMENT IMAGES
 
 function loadImages() {
+
   return Promise.all(
+
     Array.from($("images").files).map(file => {
+
       return new Promise(resolve => {
+
         const reader = new FileReader();
+
         reader.onload = () => resolve({
+
           name: file.name,
+
           url: reader.result
+
         });
+
         reader.onerror = () => resolve(null);
+
         reader.readAsDataURL(file);
+
       });
+
     })
+
   );
+
 }
 
+
+// DOWNLOAD PDF
+
 async function downloadPDF() {
+
   updatePreview();
 
   const images = (await loadImages()).filter(Boolean);
+
   const container = $("attachments");
+
   container.replaceChildren();
 
+
   if (images.length) {
+
     const page = document.createElement("section");
+
     page.className = "attachment-page";
 
+
     const title = document.createElement("h3");
-    title.textContent = "Attachments / Supporting Images";
+
+    title.textContent =
+      "Attachments / Supporting Images";
+
     page.appendChild(title);
 
+
     images.forEach((item, i) => {
+
       const wrapper = document.createElement("div");
+
       wrapper.className = "attachment-item";
 
+
       const label = document.createElement("p");
-      label.textContent = `Attachment ${i + 1}: ${item.name}`;
+
+      label.textContent =
+        `Attachment ${i + 1}: ${item.name}`;
+
 
       const img = document.createElement("img");
+
       img.src = item.url;
 
+
       wrapper.append(label, img);
+
       page.appendChild(wrapper);
+
     });
+
 
     container.appendChild(page);
 
+
     await Promise.all(
+
       Array.from(page.querySelectorAll("img")).map(img => {
-        if (img.complete) return Promise.resolve();
+
+        if (img.complete) {
+          return Promise.resolve();
+        }
+
         return new Promise(resolve => {
+
           img.onload = resolve;
+
           img.onerror = resolve;
+
         });
+
       })
+
     );
+
   }
 
+
+  // WAIT FOR SIGNATURE IMAGE
+
+  const signatureImage = $("pSignature");
+
+  if (signatureImage.getAttribute("src") &&
+      !signatureImage.complete) {
+
+    await new Promise(resolve => {
+
+      signatureImage.onload = resolve;
+
+      signatureImage.onerror = resolve;
+
+    });
+
+  }
+
+
   window.print();
+
 }
 
-$("date").value = new Date().toLocaleDateString("en-CA");
+
+// SET TODAY'S DATE
+
+const today = new Date();
+
+$("date").value =
+  today.getFullYear() + "-" +
+  String(today.getMonth() + 1).padStart(2, "0") + "-" +
+  String(today.getDate()).padStart(2, "0");
+
 updatePreview();
+
 </script>
+
 </body>
 </html>
