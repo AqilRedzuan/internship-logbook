@@ -4,133 +4,309 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Internship Logbook</title>
+<title>Internship Daily Logbook</title>
 <style>
+* { box-sizing: border-box; }
 body {
   font-family: Arial, sans-serif;
-  background: #f1f3f6;
+  background: #edf0f4;
+  color: #111;
+  margin: 0;
   padding: 20px;
 }
-.container {
-  max-width: 800px;
+.editor {
+  max-width: 850px;
   margin: auto;
   background: white;
-  padding: 25px;
+  padding: 24px;
   border-radius: 10px;
+}
+h2 { margin-top: 0; }
+label {
+  display: block;
+  font-weight: bold;
+  margin: 12px 0 5px;
 }
 input, textarea {
   width: 100%;
   padding: 9px;
-  margin: 5px 0 12px;
-  box-sizing: border-box;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  font: inherit;
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
+textarea { min-height: 75px; resize: vertical; }
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
-th, td {
-  border: 1px solid #333;
-  padding: 8px;
-}
-td input, td textarea {
-  margin: 0;
-}
-canvas {
-  border: 1px solid #888;
-  width: 100%;
-  height: 130px;
-  touch-action: none;
+.entry {
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 6px;
 }
 button {
-  padding: 10px 16px;
-  margin: 8px 5px 8px 0;
+  padding: 10px 15px;
+  margin: 6px 5px 6px 0;
+  border: 0;
+  border-radius: 5px;
+  background: #2058ae;
+  color: white;
   cursor: pointer;
 }
+button:hover { opacity: .85; }
+button.danger { background: #ad3434; }
+canvas {
+  display: block;
+  width: 100%;
+  height: 130px;
+  border: 1px solid #aaa;
+  background: white;
+  touch-action: none;
+}
+.preview {
+  max-width: 210mm;
+  margin: 20px auto;
+  background: white;
+  padding: 12mm;
+  box-shadow: 0 2px 12px #bbb;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: bold;
+}
+.instruction {
+  font-size: 9px;
+  font-style: italic;
+  margin: 3px 0 7px;
+}
+.log-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  font-size: 11px;
+}
+.log-table th, .log-table td {
+  border: 1px solid black;
+  padding: 6px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.log-table th {
+  text-align: center;
+  height: 25px;
+}
+.log-table td {
+  height: 135mm;
+}
+.log-table th:nth-child(1) { width: 15%; }
+.log-table th:nth-child(2) { width: 49%; }
+.log-table th:nth-child(3) { width: 36%; }
+.signature-area {
+  margin-top: 30px;
+  font-size: 11px;
+}
+.signature-area img {
+  width: 145px;
+  height: 55px;
+  object-fit: contain;
+  object-position: left bottom;
+}
+.signature-line {
+  border-top: 1px solid black;
+  width: 160px;
+}
+.attachment-page {
+  max-width: 210mm;
+  margin: 20px auto;
+  background: white;
+  padding: 12mm;
+}
+.attachment-page img {
+  display: block;
+  max-width: 100%;
+  max-height: 190mm;
+  object-fit: contain;
+  margin: 12px 0;
+}
+.attachment-item {
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+@media (max-width: 600px) {
+  .row { grid-template-columns: 1fr; }
+  .editor { padding: 15px; }
+  .preview { padding: 7mm; }
+}
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
 @media print {
-  body { background: white; padding: 0; }
-  .container { max-width: none; padding: 0; }
-  .controls { display: none; }
-  input, textarea { border: none; }
+  body { padding: 0; background: white; }
+  .editor { display: none; }
+  .preview, .attachment-page {
+    margin: 0;
+    padding: 12mm;
+    max-width: none;
+    box-shadow: none;
+  }
+  .preview {
+    height: 297mm;
+    break-after: page;
+  }
+  .attachment-page {
+    break-before: page;
+  }
+  .log-table td { height: 210mm; }
 }
 </style>
 </head>
 <body>
-<div class="container">
-<h2>Internship Daily Logbook</h2>
 
-<label>Date</label>
-<input type="date" id="date">
+<section class="editor">
+  <h2>Internship Daily Logbook</h2>
 
-<label>Training Week</label>
-<input type="number" id="week" min="1">
+  <div class="row">
+    <div>
+      <label>Date</label>
+      <input type="date" id="date">
+    </div>
+    <div>
+      <label>Training Week</label>
+      <input type="number" id="week" min="1" placeholder="e.g. 2">
+    </div>
+  </div>
 
-<table id="activities">
-<thead>
-<tr>
-<th>Time</th>
-<th>Entry</th>
-<th>Description / Remarks</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><input placeholder="9:30 AM"></td>
-<td><input placeholder="IT Support"></td>
-<td><textarea placeholder="Describe your task"></textarea></td>
-</tr>
-</tbody>
-</table>
+  <div class="row">
+    <div>
+      <label>Start Time</label>
+      <input type="time" id="start" value="09:00">
+    </div>
+    <div>
+      <label>End Time</label>
+      <input type="time" id="end" value="17:30">
+    </div>
+  </div>
 
-<div class="controls">
-<button onclick="addRow()">+ Add Entry</button>
-</div>
+  <h3>Daily Activities</h3>
+  <div id="entries"></div>
+  <button onclick="addEntry()">+ Add Entry</button>
 
-<h3>Student Signature</h3>
-<canvas id="signature"></canvas>
+  <h3>Attach Images</h3>
+  <input type="file" id="images"
+         accept="image/*" multiple>
 
-<div class="controls">
-<button onclick="clearSignature()">Clear Signature</button>
-<button onclick="downloadPDF()">Download PDF</button>
-</div>
-</div>
+  <h3>Student Signature</h3>
+  <canvas id="signature"></canvas>
+  <button onclick="clearSignature()">Clear Signature</button>
+
+  <hr>
+  <button onclick="updatePreview()">Update Preview</button>
+  <button onclick="downloadPDF()">Download PDF</button>
+</section>
+
+<section class="preview" id="pdfPage">
+  <div class="header">
+    <span>Date: <span id="pDate"></span></span>
+    <span>Day: <span id="pDay"></span></span>
+    <span>Training Week: <span id="pWeek"></span></span>
+  </div>
+
+  <div class="instruction">
+    (Please specify training information by descriptive
+    statement, tables, sketches, figures etc.)
+  </div>
+
+  <table class="log-table">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Entry</th>
+        <th>Description / Remarks</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="pTime"></td>
+        <td id="pEntries"></td>
+        <td id="pRemarks"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="instruction">
+    Note: Please include attachment whenever necessary
+  </div>
+
+  <div class="signature-area">
+    <img id="pSignature" alt="Student signature">
+    <div class="signature-line"></div>
+    <strong>Student Signature</strong><br>
+    <strong>Date:</strong> <span id="pSignDate"></span>
+  </div>
+</section>
+
+<section id="attachments"></section>
 
 <script>
-const canvas = document.getElementById("signature");
+const $ = id => document.getElementById(id);
+
+function addEntry() {
+  const div = document.createElement("div");
+  div.className = "entry";
+  div.innerHTML = `
+    <label>Entry / Task</label>
+    <input class="task" placeholder="e.g. IT Asset Tracking">
+    <label>Description / Remarks</label>
+    <textarea class="remark"
+      placeholder="Describe what you did"></textarea>
+    <button class="danger" onclick="this.parentElement.remove()">
+      Remove Entry
+    </button>
+  `;
+  $("entries").appendChild(div);
+}
+
+addEntry();
+
+const canvas = $("signature");
 const ctx = canvas.getContext("2d");
 let drawing = false;
 
-function resizeCanvas() {
-  const saved = canvas.toDataURL();
+function setupCanvas() {
   canvas.width = canvas.clientWidth;
   canvas.height = 130;
-  const img = new Image();
-  img.onload = () => ctx.drawImage(img, 0, 0);
-  img.src = saved;
+  ctx.lineWidth = 2;
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "#111";
 }
-resizeCanvas();
+setupCanvas();
 
-function position(e) {
-  const r = canvas.getBoundingClientRect();
+function point(e) {
+  const rect = canvas.getBoundingClientRect();
   return {
-    x: (e.clientX - r.left) * canvas.width / r.width,
-    y: (e.clientY - r.top) * canvas.height / r.height
+    x: (e.clientX - rect.left) * canvas.width / rect.width,
+    y: (e.clientY - rect.top) * canvas.height / rect.height
   };
 }
 
 canvas.addEventListener("pointerdown", e => {
   drawing = true;
   canvas.setPointerCapture(e.pointerId);
-  const p = position(e);
+  const p = point(e);
   ctx.beginPath();
   ctx.moveTo(p.x, p.y);
 });
 
 canvas.addEventListener("pointermove", e => {
   if (!drawing) return;
-  const p = position(e);
+  const p = point(e);
   ctx.lineTo(p.x, p.y);
-  ctx.lineWidth = 2;
-  ctx.lineCap = "round";
   ctx.stroke();
 });
 
@@ -141,19 +317,112 @@ function clearSignature() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function addRow() {
-  const tbody = document.querySelector("#activities tbody");
-  const row = tbody.insertRow();
-  row.innerHTML = `
-    <td><input placeholder="Time"></td>
-    <td><input placeholder="Entry"></td>
-    <td><textarea placeholder="Description"></textarea></td>
-  `;
+function formatTime(value) {
+  if (!value) return "";
+  const [h, m] = value.split(":").map(Number);
+  const suffix = h >= 12 ? "PM" : "AM";
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${suffix}`;
 }
 
-function downloadPDF() {
+function updatePreview() {
+  const date = $("date").value;
+  const parsed = date ? new Date(date + "T12:00:00") : null;
+
+  $("pDate").textContent = date || "";
+  $("pDay").textContent = parsed
+    ? parsed.toLocaleDateString("en-US", {weekday:"long"})
+    : "";
+  $("pWeek").textContent = $("week").value;
+  $("pSignDate").textContent = date;
+
+  $("pTime").textContent =
+    formatTime($("start").value) + " – " +
+    formatTime($("end").value);
+
+  const tasks = document.querySelectorAll(".task");
+  const remarks = document.querySelectorAll(".remark");
+
+  const entryCell = $("pEntries");
+  const remarkCell = $("pRemarks");
+  entryCell.replaceChildren();
+  remarkCell.replaceChildren();
+
+  tasks.forEach((task, i) => {
+    const t = document.createElement("p");
+    t.textContent = (i + 1) + ". " + task.value;
+    entryCell.appendChild(t);
+
+    const r = document.createElement("p");
+    r.textContent = (i + 1) + ". " + remarks[i].value;
+    remarkCell.appendChild(r);
+  });
+
+  $("pSignature").src = canvas.toDataURL("image/png");
+}
+
+function loadImages() {
+  return Promise.all(
+    Array.from($("images").files).map(file => {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({
+          name: file.name,
+          url: reader.result
+        });
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    })
+  );
+}
+
+async function downloadPDF() {
+  updatePreview();
+
+  const images = (await loadImages()).filter(Boolean);
+  const container = $("attachments");
+  container.replaceChildren();
+
+  if (images.length) {
+    const page = document.createElement("section");
+    page.className = "attachment-page";
+
+    const title = document.createElement("h3");
+    title.textContent = "Attachments / Supporting Images";
+    page.appendChild(title);
+
+    images.forEach((item, i) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "attachment-item";
+
+      const label = document.createElement("p");
+      label.textContent = `Attachment ${i + 1}: ${item.name}`;
+
+      const img = document.createElement("img");
+      img.src = item.url;
+
+      wrapper.append(label, img);
+      page.appendChild(wrapper);
+    });
+
+    container.appendChild(page);
+
+    await Promise.all(
+      Array.from(page.querySelectorAll("img")).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      })
+    );
+  }
+
   window.print();
 }
+
+$("date").value = new Date().toLocaleDateString("en-CA");
+updatePreview();
 </script>
 </body>
 </html>
