@@ -1,9 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Internship Daily Logbook</title>
 
 <style>
@@ -45,12 +45,6 @@ select {
   border: 1px solid #aaa;
   border-radius: 4px;
   font: inherit;
-}
-
-input[readonly] {
-  background: #f1f3f5;
-  color: #555;
-  cursor: not-allowed;
 }
 
 textarea {
@@ -240,6 +234,7 @@ canvas {
   object-position: left bottom;
 }
 
+/* Hide empty signature without removing its space */
 .signature-area img:not([src]) {
   visibility: hidden;
 }
@@ -259,7 +254,6 @@ canvas {
 }
 
 @media print {
-
   body {
     margin: 0;
     padding: 0;
@@ -290,7 +284,6 @@ canvas {
 }
 
 @media screen and (max-width: 600px) {
-
   .row {
     grid-template-columns: 1fr;
   }
@@ -317,32 +310,822 @@ canvas {
   <h2>Internship Daily Logbook</h2>
 
   <div class="row">
-
     <div>
       <label for="date">Date</label>
-
-      <input
-        type="date"
-        id="date"
-        min="2026-09-28"
-        max="2027-03-12"
-      >
+      <input type="date" id="date" min="2026-09-28" max="2027-03-12">
     </div>
 
     <div>
       <label for="week">Training Week</label>
-
       <input
-        type="number"
+        type="text"
         id="week"
+        placeholder="Automatically calculated"
         readonly
-        placeholder="Auto calculated"
       >
     </div>
-
   </div>
 
   <div class="row">
+    <div>
+      <label for="start">Start Time</label>
+      <input type="time" id="start" value="09:00">
+    </div>
 
     <div>
-      <label for="start">Start Time</label
+      <label for="end">End Time</label>
+      <input type="time" id="end" value="17:30">
+    </div>
+  </div>
+
+  <h3>Daily Activities</h3>
+
+  <div id="entries"></div>
+
+  <button type="button" onclick="addEntry()">
+    + Add Entry
+  </button>
+
+  <h3>Student Signature</h3>
+
+  <label for="signatureMethod">
+    Signature Method
+  </label>
+
+  <select
+    id="signatureMethod"
+    onchange="changeSignatureMethod()"
+  >
+    <option value="draw">
+      Draw Signature (Mouse / Touchscreen)
+    </option>
+
+    <option value="upload">
+      Upload Signature Image (PNG / JPG)
+    </option>
+  </select>
+
+  <div id="drawSignatureSection">
+
+    <p>Sign inside the box below:</p>
+
+    <canvas id="signature"></canvas>
+
+    <button
+      type="button"
+      onclick="clearSignature()"
+    >
+      Clear Signature
+    </button>
+
+  </div>
+
+  <div id="uploadSignatureSection" hidden>
+
+    <p>Upload an existing signature image:</p>
+
+    <input
+      type="file"
+      id="signatureUpload"
+      accept="image/png,image/jpeg,image/webp"
+      onchange="previewUploadedSignature()"
+    >
+
+    <img
+      id="uploadedSignaturePreview"
+      alt="Uploaded signature preview"
+    >
+
+  </div>
+
+  <hr>
+
+  <button
+    type="button"
+    onclick="updatePreview()"
+  >
+    Update Preview
+  </button>
+
+  <button
+    type="button"
+    onclick="downloadPDF()"
+  >
+    Download PDF
+  </button>
+
+</section>
+
+
+<!-- LOGBOOK PDF PREVIEW -->
+
+<section class="preview" id="pdfPage">
+
+  <div class="header">
+
+    <span>
+      Date: <span id="pDate"></span>
+    </span>
+
+    <span>
+      Day: <span id="pDay"></span>
+    </span>
+
+    <span>
+      Training Week: <span id="pWeek"></span>
+    </span>
+
+  </div>
+
+  <div class="instruction">
+    (Please specify training information by descriptive
+    statement, tables, sketches, figures etc.)
+  </div>
+
+  <table class="log-table">
+
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Entry</th>
+        <th>Description / Remarks</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td id="pTime"></td>
+        <td id="pEntries"></td>
+        <td id="pRemarks"></td>
+      </tr>
+    </tbody>
+
+  </table>
+
+  <div class="instruction">
+    Note: Please include attachment whenever necessary
+  </div>
+
+  <div class="signature-area">
+
+    <img id="pSignature" alt="">
+
+    <div class="signature-line"></div>
+
+    <strong>Student Signature</strong>
+
+    <br>
+
+    <strong>Date:</strong>
+    <span id="pSignDate"></span>
+
+  </div>
+
+</section>
+
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+let entryCounter = 0;
+let imageCounter = 0;
+
+
+// READ IMAGE FILE
+
+function readImage(file) {
+  return new Promise(resolve => {
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+
+    reader.onerror = () => {
+      resolve(null);
+    };
+
+    reader.readAsDataURL(file);
+
+  });
+}
+
+
+// ADD NEW ACTIVITY
+
+function addEntry() {
+
+  const div = document.createElement("div");
+
+  div.className = "entry";
+
+  div.dataset.entryId = ++entryCounter;
+
+  div.selectedImages = [];
+
+  div.innerHTML = `
+    <label>Entry / Task</label>
+
+    <input
+      class="task"
+      placeholder="e.g. IT Support"
+    >
+
+    <label>Description / Remarks</label>
+
+    <textarea
+      class="remark"
+      placeholder="Describe what you did"
+    ></textarea>
+
+    <label>Upload Images for This Activity</label>
+
+    <input
+      type="file"
+      class="remarkImage"
+      accept="image/png,image/jpeg,image/webp"
+      multiple
+    >
+
+    <div class="image-list"></div>
+
+    <button
+      type="button"
+      class="danger remove-entry"
+    >
+      Remove Entry
+    </button>
+  `;
+
+  const fileInput =
+    div.querySelector(".remarkImage");
+
+  const imageList =
+    div.querySelector(".image-list");
+
+
+  // UPLOAD IMAGES
+
+  fileInput.addEventListener("change", async () => {
+
+    const files = Array.from(fileInput.files);
+
+    for (const file of files) {
+
+      if (!file.type.startsWith("image/")) {
+        continue;
+      }
+
+      const url = await readImage(file);
+
+      if (!url) {
+        continue;
+      }
+
+      div.selectedImages.push({
+        id: ++imageCounter,
+        name: file.name,
+        url: url
+      });
+
+    }
+
+    // Allow uploading the same file again
+    fileInput.value = "";
+
+    renderImageList(div, imageList);
+
+  });
+
+
+  // REMOVE ACTIVITY
+
+  div.querySelector(".remove-entry")
+    .addEventListener("click", () => {
+
+      div.remove();
+
+      updatePreview();
+
+    });
+
+
+  $("entries").appendChild(div);
+
+  updatePreview();
+
+}
+
+
+// DISPLAY UPLOADED IMAGES
+
+function renderImageList(entry, container) {
+
+  container.replaceChildren();
+
+  entry.selectedImages.forEach(item => {
+
+    const card = document.createElement("div");
+
+    card.className = "image-card";
+
+
+    const img = document.createElement("img");
+
+    img.src = item.url;
+
+    img.alt = item.name;
+
+
+    const name = document.createElement("div");
+
+    name.className = "image-name";
+
+    name.textContent = item.name;
+
+
+    const removeBtn = document.createElement("button");
+
+    removeBtn.type = "button";
+
+    removeBtn.className = "danger";
+
+    removeBtn.textContent = "Remove";
+
+
+    // REMOVE ONLY SELECTED IMAGE
+
+    removeBtn.addEventListener("click", () => {
+
+      entry.selectedImages =
+        entry.selectedImages.filter(
+          image => image.id !== item.id
+        );
+
+      renderImageList(entry, container);
+
+    });
+
+
+    card.append(img, name, removeBtn);
+
+    container.appendChild(card);
+
+  });
+
+  updatePreview();
+
+}
+
+
+// SIGNATURE CANVAS
+
+const canvas = $("signature");
+
+const ctx = canvas.getContext("2d");
+
+let drawing = false;
+
+let hasDrawnSignature = false;
+
+let uploadedSignatureData = "";
+
+
+function setupCanvas() {
+
+  canvas.width = canvas.clientWidth || 600;
+
+  canvas.height = 130;
+
+  ctx.lineWidth = 2;
+
+  ctx.lineCap = "round";
+
+  ctx.lineJoin = "round";
+
+  ctx.strokeStyle = "#111";
+
+}
+
+setupCanvas();
+
+
+// GET MOUSE / TOUCH POSITION
+
+function point(e) {
+
+  const rect = canvas.getBoundingClientRect();
+
+  return {
+
+    x: (e.clientX - rect.left) *
+       canvas.width / rect.width,
+
+    y: (e.clientY - rect.top) *
+       canvas.height / rect.height
+
+  };
+
+}
+
+
+// START DRAWING
+
+canvas.addEventListener("pointerdown", e => {
+
+  drawing = true;
+
+  hasDrawnSignature = true;
+
+  canvas.setPointerCapture(e.pointerId);
+
+  const p = point(e);
+
+  ctx.beginPath();
+
+  ctx.moveTo(p.x, p.y);
+
+  ctx.lineTo(p.x + 0.1, p.y + 0.1);
+
+  ctx.stroke();
+
+});
+
+
+// DRAW SIGNATURE
+
+canvas.addEventListener("pointermove", e => {
+
+  if (!drawing) {
+    return;
+  }
+
+  const p = point(e);
+
+  ctx.lineTo(p.x, p.y);
+
+  ctx.stroke();
+
+});
+
+
+// STOP DRAWING
+
+canvas.addEventListener("pointerup", () => {
+
+  drawing = false;
+
+  updatePreview();
+
+});
+
+canvas.addEventListener("pointercancel", () => {
+
+  drawing = false;
+
+  updatePreview();
+
+});
+
+
+// CLEAR SIGNATURE
+
+function clearSignature() {
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  hasDrawnSignature = false;
+
+  updatePreview();
+
+}
+
+
+// CHANGE SIGNATURE METHOD
+
+function changeSignatureMethod() {
+
+  const method = $("signatureMethod").value;
+
+  $("drawSignatureSection").hidden =
+    method !== "draw";
+
+  $("uploadSignatureSection").hidden =
+    method !== "upload";
+
+  updatePreview();
+
+}
+
+
+// UPLOAD SIGNATURE IMAGE
+
+async function previewUploadedSignature() {
+
+  const file = $("signatureUpload").files[0];
+
+  const preview = $("uploadedSignaturePreview");
+
+  uploadedSignatureData = "";
+
+  preview.style.display = "none";
+
+  preview.removeAttribute("src");
+
+  if (file) {
+
+    uploadedSignatureData = await readImage(file);
+
+    if (uploadedSignatureData) {
+
+      preview.src = uploadedSignatureData;
+
+      preview.style.display = "block";
+
+    }
+
+  }
+
+  updatePreview();
+
+}
+
+
+// GET SELECTED SIGNATURE
+
+function getSelectedSignature() {
+
+  const method = $("signatureMethod").value;
+
+  if (method === "upload") {
+
+    return uploadedSignatureData;
+
+  }
+
+  if (hasDrawnSignature) {
+
+    return canvas.toDataURL("image/png");
+
+  }
+
+  return "";
+
+}
+
+
+// FORMAT TIME
+
+function formatTime(value) {
+
+  if (!value) {
+    return "";
+  }
+
+  const [h, m] = value.split(":").map(Number);
+
+  const suffix = h >= 12 ? "PM" : "AM";
+
+  return (
+    `${h % 12 || 12}:` +
+    `${String(m).padStart(2, "0")} ` +
+    suffix
+  );
+
+}
+
+
+// TRAINING WEEK: MONDAY 28 SEPTEMBER 2026 TO FRIDAY 12 MARCH 2027
+function calculateTrainingWeek(dateString) {
+  if (!dateString) return null;
+  const start = Date.UTC(2026, 8, 28);
+  const end = Date.UTC(2027, 2, 12);
+  const parts = dateString.split("-").map(Number);
+  const selected = Date.UTC(parts[0], parts[1] - 1, parts[2]);
+  if (selected < start || selected > end) return null;
+  return Math.floor((selected - start) / (7 * 86400000)) + 1;
+}
+
+// UPDATE LOGBOOK PREVIEW
+
+function updatePreview() {
+
+  const date = $("date").value;
+
+  const parsed = date
+    ? new Date(date + "T12:00:00")
+    : null;
+
+
+  // DATE AND DAY
+
+  $("pDate").textContent = date || "";
+
+  $("pDay").textContent = parsed
+    ? parsed.toLocaleDateString("en-US", {
+        weekday: "long"
+      })
+    : "";
+
+  const week = calculateTrainingWeek(date);
+  $("week").value = week ? `Week ${week}` : "";
+  $("pWeek").textContent = week ? `Week ${week}` : (date ? "Outside internship period" : "");
+
+  $("pSignDate").textContent = date || "";
+
+
+  // DAILY TIME RANGE
+
+  const start = formatTime($("start").value);
+
+  const end = formatTime($("end").value);
+
+  $("pTime").textContent =
+    start && end ? `${start} – ${end}` : "";
+
+
+  // CLEAR OLD PREVIEW
+
+  const entryCell = $("pEntries");
+
+  const remarkCell = $("pRemarks");
+
+  entryCell.replaceChildren();
+
+  remarkCell.replaceChildren();
+
+
+  // GET ALL ACTIVITIES
+
+  const entries = document.querySelectorAll(".entry");
+
+
+  entries.forEach((entry, i) => {
+
+    const task =
+      entry.querySelector(".task").value;
+
+    const remark =
+      entry.querySelector(".remark").value;
+
+
+    // ENTRY COLUMN
+
+    const taskText = document.createElement("p");
+
+    taskText.className = "activity-text";
+
+    taskText.textContent = `${i + 1}. ${task}`;
+
+    entryCell.appendChild(taskText);
+
+
+    // DESCRIPTION / REMARKS COLUMN
+
+    const block = document.createElement("div");
+
+    block.className = "remark-block";
+
+
+    const remarkText = document.createElement("p");
+
+    remarkText.className = "activity-text";
+
+    remarkText.textContent = `${i + 1}. ${remark}`;
+
+    block.appendChild(remarkText);
+
+
+    // ADD IMAGES INSIDE DESCRIPTION / REMARKS
+
+    entry.selectedImages.forEach(item => {
+
+      const img = document.createElement("img");
+
+      img.src = item.url;
+
+      img.alt = item.name;
+
+      block.appendChild(img);
+
+    });
+
+
+    remarkCell.appendChild(block);
+
+  });
+
+
+  // STUDENT SIGNATURE
+
+  const signature = getSelectedSignature();
+
+  const signatureImg = $("pSignature");
+
+  if (signature) {
+
+    signatureImg.src = signature;
+
+  } else {
+
+    // Remove image source if no signature
+    // CSS hides the empty image box
+    signatureImg.removeAttribute("src");
+
+  }
+
+}
+
+
+// DOWNLOAD PDF
+
+async function downloadPDF() {
+
+  updatePreview();
+
+  const images = Array.from(
+    document.querySelectorAll("#pdfPage img")
+  ).filter(img => img.getAttribute("src"));
+
+
+  // WAIT FOR IMAGES TO FINISH LOADING
+
+  await Promise.all(
+
+    images.map(img => {
+
+      if (img.complete) {
+        return Promise.resolve();
+      }
+
+      return new Promise(resolve => {
+
+        img.onload = resolve;
+
+        img.onerror = resolve;
+
+      });
+
+    })
+
+  );
+
+
+  window.print();
+
+}
+
+
+// AUTO UPDATE
+
+$("date").addEventListener(
+  "change",
+  updatePreview
+);
+
+$("week").addEventListener(
+  "input",
+  updatePreview
+);
+
+$("start").addEventListener(
+  "change",
+  updatePreview
+);
+
+$("end").addEventListener(
+  "change",
+  updatePreview
+);
+
+$("entries").addEventListener(
+  "input",
+  updatePreview
+);
+
+
+// SET TODAY'S DATE
+
+const today = new Date();
+
+$("date").value =
+  today.getFullYear() + "-" +
+  String(today.getMonth() + 1).padStart(2, "0") + "-" +
+  String(today.getDate()).padStart(2, "0");
+
+
+// INITIAL PREVIEW
+
+updatePreview();
+
+</script>
+
+</body>
+</html>
